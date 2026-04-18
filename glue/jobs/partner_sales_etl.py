@@ -26,6 +26,12 @@ df = (
 curated_df = (
     df.groupBy("partner_id", "country", "sale_date")
     .agg(F.sum("sale_amount").alias("daily_sales_amount"))
+    .withColumn(
+        "sales_band",
+        F.when(F.col("daily_sales_amount") >= 15000, F.lit("HIGH"))
+        .when(F.col("daily_sales_amount") >= 8000, F.lit("MEDIUM"))
+        .otherwise(F.lit("LOW")),
+    )
     .withColumn("load_timestamp", F.current_timestamp())
 )
 
